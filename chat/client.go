@@ -9,3 +9,17 @@ type client struct {
 	send   chan []byte
 	room   *room
 }
+
+func (c *client) read() {
+	defer c.socket.Close()
+
+	for {
+		_, msg, err := c.socket.ReadMessage()
+
+		if err != nil {
+			return
+		}
+
+		c.room.forward <- msg
+	}
+}
