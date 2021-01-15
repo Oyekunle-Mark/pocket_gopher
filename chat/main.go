@@ -37,6 +37,8 @@ func main() {
 
 	go r.run()
 
+	log.Println("Web server listening on: ", *address)
+
 	if err := http.ListenAndServe(*address, nil); err != nil {
 		log.Fatal("ListenAndServe:", err)
 	}
