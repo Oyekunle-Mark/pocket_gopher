@@ -5,9 +5,7 @@ import (
 	"html/template"
 	"log"
 	"net/http"
-	"os"
 	"path/filepath"
-	"pocket_gopher/trace"
 	"sync"
 )
 
@@ -31,7 +29,7 @@ func main() {
 	flag.Parse()
 
 	r := newRoom()
-	r.tracer = trace.New(os.Stdout)
+	//r.tracer = trace.New(os.Stdout)
 
 	http.Handle("/", &templateHandler{
 		filename: "chat.html",
