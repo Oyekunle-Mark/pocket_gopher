@@ -1,6 +1,9 @@
 package trace
 
-import "io"
+import (
+	"fmt"
+	"io"
+)
 
 // Tracer is the interface that describes an object capable of
 // tracing events throughout code.
@@ -13,6 +16,8 @@ type tracer struct {
 }
 
 func (t *tracer) Trace(a ...interface{}) {
+	fmt.Fprint(t.out, a...)
+	fmt.Fprintln(t.out)
 }
 
 func New(w io.Writer) Tracer {
