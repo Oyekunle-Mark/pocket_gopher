@@ -2,6 +2,8 @@ package main
 
 import (
 	"flag"
+	"github.com/stretchr/gomniauth"
+	"github.com/stretchr/gomniauth/providers/github"
 	"html/template"
 	"log"
 	"net/http"
@@ -29,6 +31,15 @@ func (t *templateHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 func main() {
 	var address = flag.String("address", ":8080", "The port number of the server")
 	flag.Parse()
+
+	gomniauth.SetSecurityKey("take_it.It's all yours.")
+	gomniauth.WithProviders(
+		github.New(
+			"1be45b00bf7deab19191",
+			"921c76b75202770aef4006adc1bb85ed756e6027",
+			"http://localhost:8080/auth/callback/github",
+		),
+	)
 
 	r := newRoom()
 	r.tracer = trace.New(os.Stdout)
