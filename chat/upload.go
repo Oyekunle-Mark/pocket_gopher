@@ -8,7 +8,7 @@ import (
 )
 
 func uploadHandler(w http.ResponseWriter, r *http.Request) {
-	userId := r.FormValue("userid")
+	userId := r.FormValue("user_id")
 
 	file, header, err := r.FormFile("avatarFile")
 
