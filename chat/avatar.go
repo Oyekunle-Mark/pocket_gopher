@@ -16,6 +16,8 @@ type Avatar interface {
 
 type AuthAvatar struct{}
 
+var UseAuthAvatar AuthAvatar
+
 func (AuthAvatar) GetAvatarURL(c *client) (string, error) {
 	if url, ok := c.userData["avatar_url"]; ok {
 		if urlString, ok := url.(string); ok {
