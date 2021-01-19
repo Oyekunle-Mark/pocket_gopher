@@ -71,6 +71,9 @@ func main() {
 				MaxAge: -1,
 			},
 		)
+
+		w.Header().Set("Location", "/chat")
+		w.WriteHeader(http.StatusTemporaryRedirect)
 	})
 
 	go r.run()
