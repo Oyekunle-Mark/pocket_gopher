@@ -78,6 +78,7 @@ func main() {
 	http.Handle("/upload", &templateHandler{
 		filename: "upload.html",
 	})
+	http.HandleFunc("/uploader", uploadHandler)
 
 	go r.run()
 
