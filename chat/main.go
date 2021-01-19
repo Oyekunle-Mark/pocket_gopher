@@ -65,9 +65,9 @@ func main() {
 		http.SetCookie(
 			w,
 			&http.Cookie{
-				Name: "auth",
-				Value: "",
-				Path: "/",
+				Name:   "auth",
+				Value:  "",
+				Path:   "/",
 				MaxAge: -1,
 			},
 		)

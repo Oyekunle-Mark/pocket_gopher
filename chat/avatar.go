@@ -13,3 +13,15 @@ type Avatar interface {
 	// ErrNoAvatarURL is returned if the object is unable to get // a URL for the specified client.
 	GetAvatarURL(c *client) (string, error)
 }
+
+type AuthAvatar struct{}
+
+func (AuthAvatar) GetAvatarURL(c *client) (string, error) {
+	if url, ok := c.userData["avatar_url"]; ok {
+		if urlString, ok := url.(string); ok {
+			return urlString, nil
+		}
+	}
+
+	return "", ErrNoAvatarURL
+}
