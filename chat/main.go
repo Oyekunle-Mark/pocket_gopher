@@ -14,6 +14,9 @@ import (
 	"sync"
 )
 
+// set the active Avatar implementation
+var avatars Avatar = UseFileSystemAvatar
+
 type templateHandler struct {
 	once     sync.Once
 	filename string
@@ -50,7 +53,7 @@ func main() {
 		),
 	)
 
-	r := newRoom(UseFileSystemAvatar)
+	r := newRoom(avatars)
 	r.tracer = trace.New(os.Stdout)
 
 	http.Handle("/chat", MustAuth(&templateHandler{
