@@ -16,3 +16,9 @@
 
 # Goland config
 .idea/
+
+# executables
+chatapp
+
+# assets
+avatars
