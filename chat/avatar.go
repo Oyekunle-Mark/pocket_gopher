@@ -51,25 +51,16 @@ type FileSystemAvatar struct{}
 var UseFileSystemAvatar FileSystemAvatar
 
 func (FileSystemAvatar) GetAvatarURL(u ChatUser) (string, error) {
-	if userId, ok := c.userData["user_id"]; ok {
-		if userIdString, ok := userId.(string); ok {
-			files, err := ioutil.ReadDir("avatars")
-
-			if err != nil {
-				return "", ErrNoAvatarURL
+	if files, err := ioutil.ReadDir("avatars"); err == nil {
+		for _, file := range files {
+			if file.IsDir() {
+				continue
 			}
 
-			for _, file := range files {
-				if file.IsDir() {
-					continue
-				}
-
-				if isMatch, _ := path.Match(userIdString+"*", file.Name()); isMatch {
-					return "/avatars/" + file.Name(), nil
-				}
+			if match, _ := path.Match(u.UniqueID()+"*", file.Name()); match {
+				return "/avatars/" + file.Name(), nil
 			}
 		}
 	}
-
 	return "", ErrNoAvatarURL
 }
