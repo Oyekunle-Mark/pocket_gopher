@@ -7,6 +7,7 @@ import (
 	gomniauthcommon "github.com/stretchr/gomniauth/common"
 	"github.com/stretchr/objx"
 	"io"
+	"log"
 	"net/http"
 	"strings"
 )
@@ -100,15 +101,21 @@ func loginHandler(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
+		chatUser := &chatUser{User: user}
+
 		m := md5.New()
 		io.WriteString(m, strings.ToLower(user.Email()))
-		userId := fmt.Sprintf("%x", m.Sum(nil))
+		chatUser.uniqueID = fmt.Sprintf("%x", m.Sum(nil))
+		avatarURL, err := avatars.GetAvatarURL(chatUser)
+
+		if err != nil {
+			log.Fatalln("Error when trying to GetAvatarURL", "-", err)
+		}
 
 		authCookieValue := objx.New(map[string]interface{}{
-			"user_id":    userId,
+			"user_id":    chatUser.uniqueID,
 			"name":       user.Name(),
-			"avatar_url": user.AvatarURL(),
-			"email":      user.Email(),
+			"avatar_url": avatarURL,
 		}).MustBase64()
 
 		http.SetCookie(
