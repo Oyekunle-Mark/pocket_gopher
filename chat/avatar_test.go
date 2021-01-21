@@ -1,6 +1,7 @@
 package main
 
 import (
+	gomniauthtest "github.com/stretchr/gomniauth/test"
 	"io/ioutil"
 	"os"
 	"path/filepath"
@@ -9,19 +10,21 @@ import (
 
 func TestAuthAvatar(t *testing.T) {
 	var authAvatar AuthAvatar
+	testUser := &gomniauthtest.TestUser{}
 
-	client := new(client)
-	url, err := authAvatar.GetAvatarURL(client)
+	testUser.On("AvatarURL").Return("", ErrNoAvatarURL)
+	testChatUser := &chatUser{User: testUser}
+	url, err := authAvatar.GetAvatarURL(testChatUser)
 
 	if err != ErrNoAvatarURL {
 		t.Error("AuthAvatar.GetAvatarURL should return ErrNoAvatarURL when no value present")
 	}
 
-	// set a value
 	testUrl := "http://url-to-gravatar/"
-	client.userData = map[string]interface{}{"avatar_url": testUrl}
-
-	url, err = authAvatar.GetAvatarURL(client)
+	testUser = &gomniauthtest.TestUser{}
+	testChatUser.User = testUser
+	testUser.On("AvatarURL").Return(testUrl, nil)
+	url, err = authAvatar.GetAvatarURL(testChatUser)
 
 	if err != nil {
 		t.Error("AuthAvatar.GetAvatarURL should return no error when value present ")

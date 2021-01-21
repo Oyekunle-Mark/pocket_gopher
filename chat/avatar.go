@@ -15,7 +15,7 @@ var ErrNoAvatarURL = errors.New("chat: Unable to get an avatar URL")
 type Avatar interface {
 	// GetAvatarURL gets the avatar URL for the specified client, // or returns an error if something goes wrong.
 	// ErrNoAvatarURL is returned if the object is unable to get // a URL for the specified client.
-	GetAvatarURL(c *client) (string, error)
+	GetAvatarURL(ChatUser) (string, error)
 }
 
 type AuthAvatar struct{}
@@ -50,7 +50,7 @@ type FileSystemAvatar struct{}
 
 var UseFileSystemAvatar FileSystemAvatar
 
-func (FileSystemAvatar) GetAvatarURL(c *client) (string, error) {
+func (FileSystemAvatar) GetAvatarURL(u ChatUser) (string, error) {
 	if userId, ok := c.userData["user_id"]; ok {
 		if userIdString, ok := userId.(string); ok {
 			files, err := ioutil.ReadDir("avatars")
