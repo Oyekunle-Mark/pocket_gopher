@@ -22,14 +22,14 @@ type AuthAvatar struct{}
 
 var UseAuthAvatar AuthAvatar
 
-func (AuthAvatar) GetAvatarURL(c *client) (string, error) {
-	if url, ok := c.userData["avatar_url"]; ok {
-		if urlString, ok := url.(string); ok {
-			return urlString, nil
-		}
+func (AuthAvatar) GetAvatarURL(u ChatUser) (string, error) {
+	url := u.AvatarURL()
+
+	if len(url) == 0 {
+		return "", ErrNoAvatarURL
 	}
 
-	return "", ErrNoAvatarURL
+	return url, nil
 }
 
 type GravatarAvatar struct{}
