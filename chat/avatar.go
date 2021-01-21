@@ -36,14 +36,8 @@ type GravatarAvatar struct{}
 
 var UseGravatarAvatar GravatarAvatar
 
-func (GravatarAvatar) GetAvatarURL(c *client) (string, error) {
-	if userId, ok := c.userData["user_id"]; ok {
-		if userIdString, ok := userId.(string); ok {
-			return "//www.gravatar.com/avatar/" + userIdString, nil
-		}
-	}
-
-	return "", ErrNoAvatarURL
+func (GravatarAvatar) GetAvatarURL(u ChatUser) (string, error) {
+	return "//www.gravatar.com/avatar/" + u.UniqueID(), nil
 }
 
 type FileSystemAvatar struct{}
