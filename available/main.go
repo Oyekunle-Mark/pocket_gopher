@@ -2,8 +2,12 @@ package main
 
 import (
 	"bufio"
+	"fmt"
+	"log"
 	"net"
+	"os"
 	"strings"
+	"time"
 )
 
 func exists(domain string) (bool, error) {
@@ -27,4 +31,25 @@ func exists(domain string) (bool, error) {
 	}
 
 	return true, nil
+}
+
+var marks = map[bool]string{true: "✓", false: "❌"}
+
+func main() {
+	s := bufio.NewScanner(os.Stdin)
+
+	for s.Scan() {
+		domain := s.Text()
+
+		fmt.Print(domain, " ")
+
+		exists, err := exists(domain)
+
+		if err != nil {
+			log.Fatalln(err)
+		}
+
+		fmt.Println(marks[!exists])
+		time.Sleep(1 * time.Second)
+	}
 }
