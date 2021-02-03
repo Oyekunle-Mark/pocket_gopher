@@ -21,7 +21,7 @@ func exists(domain string) (bool, error) {
 
 	defer conn.Close()
 
-	conn.Write([]byte(domain + "rn"))
+	conn.Write([]byte(domain + "\r\n"))
 	scanner := bufio.NewScanner(conn)
 
 	for scanner.Scan() {
