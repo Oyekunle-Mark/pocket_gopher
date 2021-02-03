@@ -14,8 +14,9 @@
 # Dependency directories (remove the comment below to include it)
 # vendor/
 
-# Goland config
+# Editor config
 .idea/
+.DS_Store
 
 # executables
 chatapp
