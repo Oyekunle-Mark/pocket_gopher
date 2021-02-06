@@ -1,6 +1,7 @@
 package main
 
 import (
+	"github.com/bitly/go-nsq"
 	"gopkg.in/mgo.v2"
 	"log"
 )
@@ -40,4 +41,23 @@ func loadOption() ([]string, error) {
 
 	iter.Close()
 	return options, iter.Err()
+}
+
+func publishVotes(votes <- chan string) <- chan struct{} {
+	stopchan := make(chan struct{}, 1)
+
+	pub, _ := nsq.NewProducer("localhost:4150", nsq.NewConfig())
+
+	go func() {
+		for vote := range votes {
+			pub.Publish("votes", []byte(vote)) // publish vote
+		}
+
+		log.Println("Publisher: Stopping")
+		pub.Stop()
+		log.Println("Publisher: Stopped")
+		stopchan <- struct{}{}
+	}()
+
+	return stopchan
 }
