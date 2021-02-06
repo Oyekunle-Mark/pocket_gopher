@@ -8,6 +8,7 @@ import (
 	"os/signal"
 	"sync"
 	"syscall"
+	"time"
 )
 
 var db *mgo.Session
@@ -36,6 +37,28 @@ func main() {
 
 	defer closeDb()
 
+	votes := make(chan string)
+	publisherStoppedChan := publishVotes(votes)
+	twitterStoppedChan := startTwitterStream(stopChan, votes)
+
+	go func() {
+		for {
+			time.Sleep(1 * time.Minute)
+			closeConnection()
+			stopLock.Lock()
+
+			if stop {
+				stopLock.Unlock()
+				return
+			}
+
+			stopLock.Unlock()
+		}
+	}()
+
+	<-twitterStoppedChan
+	close(votes)
+	<-publisherStoppedChan
 }
 
 func dialDb() error {
