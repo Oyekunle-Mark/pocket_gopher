@@ -9,7 +9,10 @@ import (
 	"log"
 	"os"
 	"sync"
+	"time"
 )
+
+const updateDuration = 1 * time.Second
 
 var fatalError error
 var counts map[string]int
@@ -97,6 +100,6 @@ func doCount(countsLock *sync.Mutex, counts *map[string]int, pollData *mgo.Colle
 
 	if ok {
 		log.Println("Finished updating database...")
-		* counts = nil // reset counts
+		*counts = nil // reset counts
 	}
 }
