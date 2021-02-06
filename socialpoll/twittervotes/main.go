@@ -4,11 +4,39 @@ import (
 	"github.com/bitly/go-nsq"
 	"gopkg.in/mgo.v2"
 	"log"
+	"os"
+	"os/signal"
+	"sync"
+	"syscall"
 )
 
 var db *mgo.Session
 
-func main() {}
+func main() {
+	var stopLock sync.Mutex
+	stop := false
+	stopChan := make(chan struct{}, 1)
+	signalChan := make(chan os.Signal, 1)
+
+	go func() {
+		<-signalChan
+		stopLock.Lock()
+		stop = true
+		stopLock.Unlock()
+		log.Println("Stopping...")
+		stopChan <- struct{}{}
+		closeConnection()
+	}()
+
+	signal.Notify(signalChan, syscall.SIGINT, syscall.SIGTERM)
+
+	if err := dialDb(); err != nil {
+		log.Fatalln("failed to dial MongoDB:", err)
+	}
+
+	defer closeDb()
+
+}
 
 func dialDb() error {
 	var err error
@@ -43,7 +71,7 @@ func loadOption() ([]string, error) {
 	return options, iter.Err()
 }
 
-func publishVotes(votes <- chan string) <- chan struct{} {
+func publishVotes(votes <-chan string) <-chan struct{} {
 	stopchan := make(chan struct{}, 1)
 
 	pub, _ := nsq.NewProducer("localhost:4150", nsq.NewConfig())
