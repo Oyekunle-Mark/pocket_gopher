@@ -1,11 +1,13 @@
 package main
 
 import (
+	"io"
 	"net"
 	"time"
 )
 
 var conn net.Conn
+var reader io.ReadCloser
 
 func dial(network, address string) (net.Conn, error) {
 	if conn != nil {
@@ -20,4 +22,14 @@ func dial(network, address string) (net.Conn, error) {
 	}
 
 	return netConnection, nil
+}
+
+func closeConnection() {
+	if conn != nil {
+		conn.Close()
+	}
+
+	if reader != nil {
+		reader.Close()
+	}
 }
