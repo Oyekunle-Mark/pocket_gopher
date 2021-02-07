@@ -2,8 +2,14 @@ package main
 
 import (
 	"context"
+	"gopkg.in/mgo.v2"
 	"net/http"
 )
+
+// Server is the API server.
+type Server struct {
+	db *mgo.Session
+}
 
 func main() {}
 
