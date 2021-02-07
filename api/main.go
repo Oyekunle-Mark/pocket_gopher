@@ -36,7 +36,10 @@ func main() {
 
 	log.Println("Starting web server on", *address)
 
-	http.ListenAndServe(*address, mux)
+	if err := http.ListenAndServe(*address, mux); err != nil {
+		log.Fatal("Failed to start server: ", err)
+	}
+
 	log.Println("Stopping...")
 }
 
