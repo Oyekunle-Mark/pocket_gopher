@@ -2,7 +2,9 @@ package main
 
 import (
 	"context"
+	"flag"
 	"gopkg.in/mgo.v2"
+	"log"
 	"net/http"
 )
 
@@ -11,7 +13,32 @@ type Server struct {
 	db *mgo.Session
 }
 
-func main() {}
+func main() {
+	address := flag.String("addr", ":8080", "endpoint address")
+	mongo := flag.String("mongo", "localhost", "mongodb address")
+
+	log.Println("Dialing mongo", *mongo)
+
+	db, err := mgo.Dial(*mongo)
+
+	if err != nil {
+		log.Fatalln("failed to connect to mongo:", err)
+	}
+
+	defer db.Close()
+
+	s := &Server{
+		db: db,
+	}
+
+	mux := http.NewServeMux()
+	mux.HandleFunc("/polls/", withCORS(withAPIKey(s.handlePolls)))
+
+	log.Println("Starting web server on", *address)
+
+	http.ListenAndServe(*address, mux)
+	log.Println("Stopping...")
+}
 
 type contextKey struct {
 	name string
