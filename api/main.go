@@ -29,7 +29,7 @@ func withAPIKey(fn http.HandlerFunc) http.HandlerFunc {
 		key := r.URL.Query().Get("key")
 
 		if !isValidAPIKey(key) {
-			respondErr(w, r, http.StatusUnauthorized, "invalid API key")
+			respondError(w, http.StatusUnauthorized, "invalid API key")
 			return
 		}
 
