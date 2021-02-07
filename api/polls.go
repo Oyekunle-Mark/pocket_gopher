@@ -57,7 +57,32 @@ func (s *Server) handlePollsGet(w http.ResponseWriter, r *http.Request) {
 }
 
 func (s *Server) handlePollsPost(w http.ResponseWriter, r *http.Request) {
-	respondError(w, http.StatusInternalServerError, errors.New("not implemented"))
+	session := s.db.Copy()
+	defer session.Close()
+
+	c := session.DB("ballots").C("polls")
+	var p poll
+
+	if err := decodeBody(r, &p); err != nil {
+		respondError(w, http.StatusBadRequest, "failed to read poll from request", err)
+		return
+	}
+
+	apikey, ok := APIKey(r.Context())
+
+	if ok {
+		p.APIKey = apikey
+	}
+
+	p.ID = bson.NewObjectId()
+
+	if err := c.Insert(p); err != nil {
+		respondError(w, http.StatusInternalServerError, "failed to insert poll", err)
+		return
+	}
+
+	w.Header().Set("Location", "polls/"+p.ID.Hex())
+	respond(w, http.StatusCreated, nil)
 }
 
 func (s *Server) handlePollsDelete(w http.ResponseWriter,
