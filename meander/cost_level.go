@@ -28,3 +28,7 @@ func (c Cost) String() string {
 
 	return "invalid"
 }
+
+func ParseCost(s string) Cost {
+	return costStrings[s]
+}
