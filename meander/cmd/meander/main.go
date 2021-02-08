@@ -48,7 +48,8 @@ func main() {
 
 func cors(fn http.HandlerFunc) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-
+		w.Header().Set("Access-Control-Allow-Origin", "*")
+		fn(w, r)
 	}
 }
 
