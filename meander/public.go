@@ -6,7 +6,7 @@ type Facade interface {
 
 func Public(o interface{}) interface{} {
 	if p, ok := o.(Facade); ok {
-		return p
+		return p.Public()
 	}
 
 	return o
