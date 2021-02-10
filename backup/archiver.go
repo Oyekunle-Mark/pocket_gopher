@@ -16,6 +16,7 @@ type zipper struct{}
 // ZIP is an Archiver that zips and unzips files.
 var ZIP Archiver = (*zipper)(nil)
 
+// Archive archives src to dest
 func (z *zipper) Archive(src, dest string) error {
 	if err := os.MkdirAll(filepath.Dir(dest), 0777); err != nil {
 		return err
