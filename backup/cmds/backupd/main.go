@@ -78,22 +78,52 @@ func main() {
 		return
 	}
 
+	check(m, col)
+
+	signalChan := make(chan os.Signal, 1)
+	signal.Notify(signalChan, syscall.SIGINT, syscall.SIGTERM)
+
 	for {
-		check(m, col)
-
-		signalChan := make(chan os.Signal, 1)
-		signal.Notify(signalChan, syscall.SIGINT, syscall.SIGTERM)
-
-		for {
-			select {
-			case <-time.After(*interval):
-				check(m, col)
-			case <-signalChan: // stop
-				fmt.Println()
-				log.Printf("Stopping...")
-				return
-			}
+		select {
+		case <-time.After(*interval):
+			check(m, col)
+		case <-signalChan: // stop
+			fmt.Println()
+			log.Printf("Stopping...")
+			return
 		}
 	}
 }
 
+func check(m *backup.Monitor, col *filedb.C) {
+	log.Println("Checking...")
+	counter, err := m.Now()
+
+	if err != nil {
+		log.Fatalln("failed to backup:", err)
+	}
+
+	if counter > 0 {
+		log.Printf("  Archived %d directories\n", counter)
+		var path path
+
+		col.SelectEach(func(_ int, data []byte) (bool, []byte, bool) {
+			if err := json.Unmarshal(data, &path); err != nil {
+				log.Println("failed to unmarshal data (skipping):", err)
+				return true, data, false
+			}
+
+			path.Hash, _ = m.Paths[path.Path]
+			newdata, err := json.Marshal(&path)
+
+			if err != nil {
+				log.Println("failed to marshal data (skipping):", err)
+				return true, data, false
+			}
+
+			return true, newdata, false
+		})
+	} else {
+		log.Println("  No changes")
+	}
+}
