@@ -9,6 +9,7 @@ import (
 
 type Archiver interface {
 	Archive(src, dest string) error
+	DestFmt() string
 }
 
 type zipper struct{}
@@ -64,4 +65,8 @@ func (z *zipper) Archive(src, dest string) error {
 
 		return nil
 	})
+}
+
+func (z *zipper) DestFmt() string {
+	return "%d.zip"
 }
