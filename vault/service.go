@@ -2,7 +2,9 @@ package vault
 
 import (
 	"context"
+	"encoding/json"
 	"golang.org/x/crypto/bcrypt"
+	"net/http"
 )
 
 // Service provides password hashing capabilities.
@@ -55,4 +57,15 @@ type validateRequest struct {
 type validateResponse struct {
 	Valid bool   `json:"valid"`
 	Err   string `json:"err,omitempty"`
+}
+
+func decodeHashRequest(ctx context.Context, r *http.Request) (interface{}, error) {
+	var req hashRequest
+	err := json.NewDecoder(r.Body).Decode(&req)
+
+	if err != nil {
+		return nil, err
+	}
+
+	return req, nil
 }
