@@ -49,6 +49,17 @@ type hashResponse struct {
 	Err  string `json:"err,omitempty"`
 }
 
+func decodeHashRequest(ctx context.Context, r *http.Request) (interface{}, error) {
+	var req hashRequest
+	err := json.NewDecoder(r.Body).Decode(&req)
+
+	if err != nil {
+		return nil, err
+	}
+
+	return req, nil
+}
+
 type validateRequest struct {
 	Password string `json:"password"`
 	Hash     string `json:"hash"`
@@ -59,8 +70,8 @@ type validateResponse struct {
 	Err   string `json:"err,omitempty"`
 }
 
-func decodeHashRequest(ctx context.Context, r *http.Request) (interface{}, error) {
-	var req hashRequest
+func decodeValidateRequest(ctx context.Context, r *http.Request) (interface{}, error) {
+	var req validateRequest
 	err := json.NewDecoder(r.Body).Decode(&req)
 
 	if err != nil {
